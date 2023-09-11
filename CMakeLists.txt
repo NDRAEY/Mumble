@@ -27,6 +27,7 @@ target_link_libraries(${TARGET} PkgConfig::LIBAV)
 
 if(NOT DEFINED FFMPEG_PROJECT_DIR AND CMAKE_SYSTEM_NAME STREQUAL "Android")
 	message(SEND_ERROR "Cannot configure MumbleVP for Android platform without external FFmpeg libraries!")
+	message(SEND_ERROR "FFMPEG_PROJECT_DIR is not set!")
 	message(FATAL_ERROR "Download FFMpeg sources and compile it for your platform, then try again.")
 
 	exit()

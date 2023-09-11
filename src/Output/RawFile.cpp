@@ -8,7 +8,7 @@
 
 namespace Output {
 	RawFile::RawFile() = default;
-	RawFile::~RawFile() = default;
+	RawFile::~RawFile() {};
 
 //	void RawFile::write(const uint8_t *data, std::size_t size) {
 //		std::printf("%8p: Write of size %zu bytes requested!\n", data, size);

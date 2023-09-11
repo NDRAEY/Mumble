@@ -10,7 +10,7 @@ namespace Output {
 
 	class Output {
 	public:
-		virtual void write(const uint8_t* data, std::size_t size) = 0;
+		void write(const uint8_t* data, std::size_t size);
 
 		const std::string id;
 	};

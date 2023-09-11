@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
 	printf("Frame size: %d\n", videoCodecContext->frame_size);
 	printf("Sample rate: %d\n", videoCodecParameters->sample_rate);
 	printf("Size: %dx%d\n", videoCodecContext->width, videoCodecContext->height);
-	printf("Duration: %02ld:%02ld:%02ld.%.00f\n",
+	printf("Duration: %02lld:%02lld:%02lld.%.00f\n",
 		   inputFormatContext->duration / 3600000000,
 		   (inputFormatContext->duration / 60000000) % 60,
 		   (inputFormatContext->duration / 1000000) % 60,
@@ -100,14 +100,14 @@ int main(int argc, char** argv) {
 	// Create Output object here.
 	// Initialize it with some needed information.
 
-//	Output::RawFile* output = new Output::RawFile();
+	// Output::Output* output = new Output::RawFile();
 	Output::RawFile* output = new Output::RawFile;
 
     while (av_read_frame(inputFormatContext, packet) >= 0) {
         if (packet->stream_index == (int)videoStreamIndex) {
             avcodec_send_packet(videoCodecContext, packet);
 
-			printf("Packet: %ld\n", packet->pos);
+			printf("Packet: %llu\n", packet->pos);
 
             while (avcodec_receive_frame(videoCodecContext, frame) >= 0) {
                 AVFrame* rgbFrame = av_frame_alloc();
