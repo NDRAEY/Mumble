@@ -101,7 +101,7 @@ int main(int argc, char** argv) {
 	// Initialize it with some needed information.
 
 	// Output::Output* output = new Output::RawFile();
-	Output::RawFile* output = new Output::RawFile;
+	Output::Output* output = new Output::RawFile;
 
     while (av_read_frame(inputFormatContext, packet) >= 0) {
         if (packet->stream_index == (int)videoStreamIndex) {
