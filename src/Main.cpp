@@ -1,3 +1,5 @@
+#include "../include/Output/RawFile.hpp"
+
 extern "C" {
 	#include <libavcodec/avcodec.h>
 	#include <libavformat/avformat.h>
@@ -34,7 +36,6 @@ int main(int argc, char** argv) {
     }
 
 	printf("Input: %s\n", inputFileName);
-
 	printf("Streams: %d\n", inputFormatContext->nb_streams);
 
     unsigned int videoStreamIndex = 0xFFFFFFFF;
@@ -71,6 +72,7 @@ int main(int argc, char** argv) {
 
 	AVStream* video_stream = inputFormatContext->streams[videoStreamIndex];
 
+	// Print information about media file
 	printf("Codec: %s\n", videoCodec->name);
 	printf("Framerate: %.03f fps\n", (double)video_stream->r_frame_rate.num / (double)video_stream->r_frame_rate.den);
 
@@ -83,11 +85,10 @@ int main(int argc, char** argv) {
 		   (inputFormatContext->duration / 1000000) % 60,
 		   (double)(inputFormatContext->duration % 1000000) / 1000.0);
 
-    // Создаем пакет и фрейм для декодирования
     packet = av_packet_alloc();
     frame = av_frame_alloc();
 
-    // Открываем выходной файл
+    // Open output file
     FILE* outputFile = fopen(outputFileName, "wb");
     if (outputFile == nullptr) {
         printf("Could not open output stream!\n");
@@ -96,6 +97,12 @@ int main(int argc, char** argv) {
 
     SwsContext* swsContext = nullptr;
 
+	// Create Output object here.
+	// Initialize it with some needed information.
+
+//	Output::RawFile* output = new Output::RawFile();
+	Output::RawFile* output = new Output::RawFile;
+
     while (av_read_frame(inputFormatContext, packet) >= 0) {
         if (packet->stream_index == (int)videoStreamIndex) {
             avcodec_send_packet(videoCodecContext, packet);
@@ -103,7 +110,6 @@ int main(int argc, char** argv) {
 			printf("Packet: %ld\n", packet->pos);
 
             while (avcodec_receive_frame(videoCodecContext, frame) >= 0) {
-                // Конвертируем формат кадра в RGB24
                 AVFrame* rgbFrame = av_frame_alloc();
                 rgbFrame->format = AV_PIX_FMT_RGB24;
                 rgbFrame->width = frame->width;
@@ -125,8 +131,12 @@ int main(int argc, char** argv) {
 
                 sws_freeContext(swsContext);
 
-                // Записываем данные RGB в файл
-                fwrite(
+                // Writing RGB24 data here!
+
+				// Data and size.
+				output->write(rgbFrame->data[0], rgbFrame->linesize[0] * rgbFrame->height);
+
+				fwrite(
                 	rgbFrame->data[0],
                 	1,
                 	rgbFrame->linesize[0] * rgbFrame->height,
@@ -139,7 +149,9 @@ int main(int argc, char** argv) {
         av_packet_unref(packet);
     }
 
-    // Освобождаем ресурсы
+	delete (Output::RawFile*)output;
+
+    // Free allocated resources
     fclose(outputFile);
     av_packet_free(&packet);
     av_frame_free(&frame);

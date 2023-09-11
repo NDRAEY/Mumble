@@ -13,7 +13,11 @@ pkg_check_modules(LIBAV REQUIRED IMPORTED_TARGET
 )
 
 set(TARGET mumble)
-set(OBJS src/Main.cpp)
+set(OBJS src/Main.cpp
+		src/Output/Output.cpp
+		include/Output/Output.hpp
+		src/Output/RawFile.cpp
+		include/Output/RawFile.hpp)
 
 add_compile_options(-static -Wall)
 
