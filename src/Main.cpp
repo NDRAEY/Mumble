@@ -136,6 +136,7 @@ int main(int argc, char** argv) {
 
 	player_info.window_width = videoCodecContext->width;
 	player_info.window_height =  videoCodecContext->height;
+	player_info.window_pixfmt = AV_PIX_FMT_RGB24;
 
     packet = av_packet_alloc();
     frame = av_frame_alloc();
