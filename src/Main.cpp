@@ -95,8 +95,6 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    SwsContext* swsContext = nullptr;
-
 	// Create Output object here.
 	// Initialize it with some needed information.
 
@@ -116,7 +114,7 @@ int main(int argc, char** argv) {
                 rgbFrame->height = frame->height;
                 av_frame_get_buffer(rgbFrame, 32);
 
-                swsContext = sws_getContext(
+				SwsContext* swsContext = sws_getContext(
                     frame->width, frame->height,
 					videoCodecContext->pix_fmt,
                     frame->width, frame->height,
