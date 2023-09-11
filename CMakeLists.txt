@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
 project(Mumble)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+# list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
+# If you need to force config with PkgConfig, use -DCMAKE_SYSTEM_NAME=Linux
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
 	find_package(PkgConfig REQUIRED)
 
@@ -30,6 +31,7 @@ add_compile_options(-static -Wall)
 
 add_executable(${TARGET} ${OBJS})
 
+# We don't need PkgConfig's LIBAV if we configuring for Android
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
 	target_link_libraries(${TARGET} PkgConfig::LIBAV)
 endif()
@@ -42,6 +44,8 @@ if(NOT DEFINED FFMPEG_PROJECT_DIR AND CMAKE_SYSTEM_NAME STREQUAL "Android")
 	exit()
 endif()
 
+# TODO: Add external FFMpeg's libraries and headers to 
+#       compile options
 if(DEFINED FFMPEG_PROJECT_DIR AND CMAKE_SYSTEM_NAME STREQUAL "Android")
 	message(WARNING "Configuring for Android")
 	message("FFMPEG: ${FFMPEG_PROJECT_DIR}")
