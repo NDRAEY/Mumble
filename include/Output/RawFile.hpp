@@ -13,9 +13,7 @@ namespace Output {
 		RawFile();
 		~RawFile();
 
-		void write(const uint8_t *data, std::size_t size) {
-			std::printf("%8p: Write of size %zu bytes requested!\n", data, size);
-		};
+		void write(const uint8_t *data, std::size_t size) override;
 
 		const std::string id = "RawFile";
 	};

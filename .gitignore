@@ -2,3 +2,5 @@
 *.mkv
 *.raw
 /build
+*.out
+*.log
