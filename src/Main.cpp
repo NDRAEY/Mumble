@@ -128,11 +128,11 @@ int main(int argc, char** argv) {
 	printf("Frame size: %d\n", videoCodecContext->frame_size);
 	printf("Sample rate: %d\n", videoCodecParameters->sample_rate);
 	printf("Size: %dx%d\n", videoCodecContext->width, videoCodecContext->height);
-	printf("Duration: %02ld:%02ld:%02ld.%.00f\n",
-		   inputFormatContext->duration / 3600000000,
-		   (inputFormatContext->duration / 60000000) % 60,
-		   (inputFormatContext->duration / 1000000) % 60,
-		   (double)(inputFormatContext->duration % 1000000) / 1000.0);
+	printf("Duration: %02lld:%02lld:%02lld.%.00f\n",
+		   inputFormatContext->duration / 3600000000, // hour
+		   (inputFormatContext->duration / 60000000) % 60, // minute
+		   (inputFormatContext->duration / 1000000) % 60, // seconds
+		   (double)(inputFormatContext->duration % 1000000) / 1000.0); // millis
 
 	player_info.window_width = videoCodecContext->width;
 	player_info.window_height =  videoCodecContext->height;

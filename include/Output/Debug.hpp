@@ -16,6 +16,7 @@ namespace Output {
 		~Debug();
 
 		void write(const AVFrame* frame) override;
+		static Output* create(struct ::PlayerInfo* player_info);
 
 		const std::string id = "Debug";
 	};

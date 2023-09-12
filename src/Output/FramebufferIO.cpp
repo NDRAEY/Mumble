@@ -80,4 +80,8 @@ namespace Output {
 			}
 		}
 	}
+
+	Output* FramebufferIO::create(struct ::PlayerInfo* info) {
+		return new FramebufferIO(info);
+	}
 }

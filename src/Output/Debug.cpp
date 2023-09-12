@@ -18,4 +18,8 @@ namespace Output {
 		);
 	}
 
+	Output* Debug::create(struct ::PlayerInfo* player_info) {
+		return new Debug(player_info);
+	}
+
 } // Output

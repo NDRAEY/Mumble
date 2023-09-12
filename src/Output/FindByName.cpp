@@ -3,12 +3,19 @@
 //
 
 #include <iostream>
+#include <vector>
 #include "../../include/Output/FindByName.hpp"
 #include "../../include/Output/Debug.hpp"
 #include "../../include/Output/FramebufferIO.hpp"
 
 namespace Output {
 	Output *FindByName(const std::string& name, struct ::PlayerInfo* player_info) {
+		std::vector<std::pair<std::string, Output* (*)(struct ::PlayerInfo*)>> mapping = {
+			{"None", nullptr},
+			{"Debug", &Debug::create},
+			{"Framebuffer", &FramebufferIO::create}
+		};
+
 		if(name == "None") {
 			// ...
 		} else if(name == "Debug") {

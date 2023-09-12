@@ -16,6 +16,8 @@ namespace Output {
 		~FramebufferIO();
 
 		void write(const AVFrame *frame) override;
+		static Output* create(struct ::PlayerInfo* info);
+		
 	private:
 		int fd = -1;
 
