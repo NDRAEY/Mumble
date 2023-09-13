@@ -30,21 +30,25 @@ namespace Output {
 			std::printf("\x1b[0;0H");
 
 			uint32_t bpp = 3;
-			uint32_t pitch = (bpp * player_info->window_width);
 
-			for(int y = 0; y < frame->height - 1; y++) {
-//				std::printf("\x1b[A");
+			for(int y = 0; y < player_info->window_height; y++) {
+				std::printf("\x1b[%d;%dH", y, 0);
 
-				for(int x = 0; x < frame->width - 3; x++) {
+				for(int x = 0; x < player_info->window_width; x++) {
 					uint32_t in_coord = y * (bpp * frame->width) + (x * bpp);
-					std::printf("\x1b[%d;%dH", y, x);
 
-					std::printf(
-						"\x1b[38;2;%d;%d;%dm#",
-						frame->data[0][in_coord + 0],
-						frame->data[0][in_coord + 1],
-						frame->data[0][in_coord + 2]
-					);
+					if(frame->data[0][in_coord + 0] == 0
+					   || frame->data[0][in_coord + 1] == 0
+					   || frame->data[0][in_coord + 2] == 0) {
+						std::printf(" ");
+					} else {
+						std::printf(
+								"\x1b[38;2;%d;%d;%dm@",
+								frame->data[0][in_coord + 0],
+								frame->data[0][in_coord + 1],
+								frame->data[0][in_coord + 2]
+						);
+					}
 				}
 			}
 		}
