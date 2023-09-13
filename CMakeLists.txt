@@ -29,7 +29,7 @@ set(OBJS src/Main.cpp
 		src/Output/TerminalIO.cpp
 		include/Output/TerminalIO.hpp)
 
-add_compile_options(-static -Wall)
+add_compile_options(-static -Wall -O1)
 
 # We don't need PkgConfig's LIBAV when we configuring for Android
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")

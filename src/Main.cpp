@@ -120,10 +120,13 @@ int main(int argc, char** argv) {
     }
 
 	AVStream* video_stream = inputFormatContext->streams[videoStreamIndex];
+	player_info.current_video_stream = video_stream;
 
 	// Print information about media file
 	printf("Codec: %s\n", videoCodec->name);
 	printf("Framerate: %.03f fps\n", (double)video_stream->r_frame_rate.num / (double)video_stream->r_frame_rate.den);
+
+	player_info.framerate = (double)video_stream->r_frame_rate.num / (double)video_stream->r_frame_rate.den;
 
 	printf("Frame size: %d\n", videoCodecContext->frame_size);
 	printf("Sample rate: %d\n", videoCodecParameters->sample_rate);

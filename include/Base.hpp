@@ -16,4 +16,7 @@ struct PlayerInfo {
 	int window_height;
 
 	enum AVPixelFormat window_pixfmt;
+
+	double framerate;
+	AVStream* current_video_stream;
 };
