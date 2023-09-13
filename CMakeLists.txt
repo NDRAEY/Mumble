@@ -31,10 +31,10 @@ set(OBJS src/Main.cpp
 
 add_compile_options(-static -Wall)
 
-add_executable(${TARGET} ${OBJS})
-
 # We don't need PkgConfig's LIBAV when we configuring for Android
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
+	add_executable(${TARGET} ${OBJS})
+
 	target_link_libraries(${TARGET} PkgConfig::LIBAV)
 endif()
 
@@ -54,5 +54,15 @@ if(DEFINED FFMPEG_PROJECT_DIR AND CMAKE_SYSTEM_NAME STREQUAL "Android")
 
 	add_compile_options(-I${FFMPEG_PROJECT_DIR}/)
 
-#	add_link_options(-l${FFMPEG_PROJECT_DIR}/libavutil/libavutil.a)
+	add_link_options(
+		${FFMPEG_PROJECT_DIR}/libavutil/libavutil.a
+		${FFMPEG_PROJECT_DIR}/libavformat/libavformat.a
+		${FFMPEG_PROJECT_DIR}/libavcodec/libavcodec.a
+		${FFMPEG_PROJECT_DIR}/libswscale/libswscale.a
+		${FFMPEG_PROJECT_DIR}/libswresample/libswresample.a
+		-lz
+		-lc
+	)
+
+	add_executable(${TARGET} ${OBJS})
 endif()

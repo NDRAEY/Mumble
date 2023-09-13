@@ -6,6 +6,7 @@
 
 #include "Output.hpp"
 #include <sys/ioctl.h>
+#include <unistd.h>
 #include <csignal>
 #include "../Base.hpp"
 
