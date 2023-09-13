@@ -14,9 +14,9 @@
 static long long timeInMilliseconds(void) {
 	struct timeval tv;
 
-	gettimeofday(&tv,NULL);
+	gettimeofday(&tv, NULL);
 
-	return (((long long)tv.tv_sec)*1000)+(tv.tv_usec/1000);
+	return (((long long)tv.tv_sec) * 1000) + (tv.tv_usec / 1000);
 }
 
 namespace Output {
@@ -26,12 +26,10 @@ namespace Output {
 		TerminalIO(struct ::PlayerInfo* player_info) : player_info(player_info) {
 			ioctl(STDOUT_FILENO, TIOCGWINSZ, &winsize);
 
-			std::printf("Got terminal size: %dx%d\n", winsize.ws_col, winsize.ws_row);
-
 			player_info->window_width = winsize.ws_col;
 			player_info->window_height = winsize.ws_row * 2;
 
-			std::printf("Current format: %d\n", player_info->window_pixfmt);
+			std::printf("Video scaler set to: %dx%d\n", winsize.ws_col, winsize.ws_row);
 		}
 
 		~TerminalIO() = default;
@@ -75,18 +73,21 @@ namespace Output {
 
 			auto framerate = 1000.0 / (double)(end - start);
 
+			bool wait = framerate > this->player_info->framerate;
+
 			// If diff is greater than framerate, wait for a while
 			// If less, perform frameskip
 
 			std::printf(
-				"\x1b[0m%.0f fps (vs %f fps) [%s] [%dx%d] [Time: %lld ms]\x1b[K",
+				"\x1b[0m%.0f fps (vs %f fps) [%s] [%dx%d] [Skip: %.0f frames]\x1b[K",
 				framerate,
 				this->player_info->framerate,
-				(framerate > this->player_info->framerate) ? "Wait" : "Skip",
+				wait ? "Wait" : "Skip",
 				player_info->window_width,
 				player_info->window_height,
-				av_rescale_q(frame->pts, player_info->current_video_stream->time_base, AV_TIME_BASE_Q)
+				// av_rescale_q(frame->pts, player_info->current_video_stream->time_base, AV_TIME_BASE_Q)
 //				(int)frame->pts
+				this->player_info->framerate - framerate
 			);
 		}
 
