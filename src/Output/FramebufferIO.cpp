@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <unistd.h>
 
-std::vector<char*> possible_fb_devices = {
+std::vector<std::string> possible_fb_devices = {
 		"/dev/fb0",
 		"/dev/graphics/fb0"
 };
@@ -21,10 +21,10 @@ namespace Output {
 //		fd = open("/dev/fb0", O_RDWR);
 
 		for(const auto& i : possible_fb_devices) {
-			fd = open(i, O_RDWR);
+			fd = open(i.c_str(), O_RDWR);
 
 			if(fd >= 0) {
-				std::printf("Found fb device: %s\n", i);
+				std::printf("Found fb device: %s\n", i.c_str());
 
 				break;
 			}
@@ -35,6 +35,7 @@ namespace Output {
 		}
 
 		ioctl(fd, FBIOGET_VSCREENINFO, &vinfo);
+
 
 		printf("Framebuffer size: %dx%d\n", vinfo.width, vinfo.height);
 		printf("Framebuffer BPP: %d bits\n", vinfo.bits_per_pixel);

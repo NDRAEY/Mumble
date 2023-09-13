@@ -129,10 +129,10 @@ int main(int argc, char** argv) {
 	printf("Sample rate: %d\n", videoCodecParameters->sample_rate);
 	printf("Size: %dx%d\n", videoCodecContext->width, videoCodecContext->height);
 	printf("Duration: %02lld:%02lld:%02lld.%.00f\n",
-		   inputFormatContext->duration / 3600000000, // hour
-		   (inputFormatContext->duration / 60000000) % 60, // minute
-		   (inputFormatContext->duration / 1000000) % 60, // seconds
-		   (double)(inputFormatContext->duration % 1000000) / 1000.0); // millis
+		   (long long int)inputFormatContext->duration / (3600 * (long long int)AV_TIME_BASE), // hour
+		   (long long int)(inputFormatContext->duration / (60 * AV_TIME_BASE)) % 60, // minute
+		   (long long int)(inputFormatContext->duration / AV_TIME_BASE) % 60, // seconds
+		   (double)(inputFormatContext->duration % AV_TIME_BASE) / 1000.0); // millis
 
 	player_info.window_width = videoCodecContext->width;
 	player_info.window_height =  videoCodecContext->height;
@@ -163,7 +163,7 @@ int main(int argc, char** argv) {
                 rgbFrame->height = frame->height;
                 av_frame_get_buffer(rgbFrame, 32);
 
-				printf("SWS: %d x %d\n", player_info.window_width, player_info.window_height);
+//				printf("SWS: %d x %d\n", player_info.window_width, player_info.window_height);
 
 				SwsContext* swsContext = sws_getContext(
                     frame->width, frame->height,

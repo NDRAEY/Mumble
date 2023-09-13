@@ -25,13 +25,15 @@ set(OBJS src/Main.cpp
 		include/Output/FindByName.hpp
 		src/Output/FindByName.cpp
 		src/Output/FramebufferIO.cpp
-		include/Output/FramebufferIO.hpp)
+		include/Output/FramebufferIO.hpp
+		src/Output/TerminalIO.cpp
+		include/Output/TerminalIO.hpp)
 
 add_compile_options(-static -Wall)
 
 add_executable(${TARGET} ${OBJS})
 
-# We don't need PkgConfig's LIBAV if we configuring for Android
+# We don't need PkgConfig's LIBAV when we configuring for Android
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
 	target_link_libraries(${TARGET} PkgConfig::LIBAV)
 endif()
