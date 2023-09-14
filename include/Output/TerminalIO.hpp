@@ -80,19 +80,27 @@ namespace Output {
 			// If diff is greater than framerate, wait for a while
 			// If less, perform frameskip
 
+			if(!wait) {
 			std::printf(
-				"\x1b[0m%.0f fps (vs %f fps) [%s] [%dx%d] [Skip: %.0f frames] [Frame time: %.0f ms]\x1b[K",
+				"\x1b[0m%.0f fps (vs %f fps) [%dx%d] [Skip: %.0f frames] [Frame time: %.0f ms]\x1b[K",
 				framerate,
 				this->player_info->framerate,
-				wait ? "Wait" : "Skip",
 				player_info->window_width,
 				player_info->window_height,
-				// av_rescale_q(frame->pts, player_info->current_video_stream->time_base, AV_TIME_BASE_Q)
-//				(int)frame->pts
-				// this->player_info->framerate - framerate
 				delay / this->player_info->framerate,
 				delay
 			);
+			} else  {
+			std::printf(
+				"\x1b[0m%.0f fps (vs %f fps) [%dx%d] [Wait: %.0f ms] [Frame time: %.0f ms]\x1b[K",
+				framerate,
+				this->player_info->framerate,
+				player_info->window_width,
+				player_info->window_height,
+				(1000.0 / this->player_info->framerate) - delay,
+				delay
+			);
+			}
 		}
 
 		static Output* create(struct ::PlayerInfo* pi) {
