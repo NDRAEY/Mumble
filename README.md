@@ -1,7 +1,8 @@
 # Mumble
-Simple video player based on FFMpeg libraries
 
-Written in C++
+Simple video player based on FFMpeg libraries.
+
+Written in C++.
 
 # Support
 
@@ -9,6 +10,7 @@ It supports multiple backends:
 
 + None (For testing)
 + Debug (For testing)
-+ FramebufferIO (beta)
++ Framebuffer (beta)
++ Terminal (TrueColor)
 
-Coming soon: Terminal
+For terminal output I recommend `xterm`.
