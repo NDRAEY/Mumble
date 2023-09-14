@@ -71,7 +71,9 @@ namespace Output {
 
 			auto end = ::timeInMilliseconds();
 
-			auto framerate = 1000.0 / (double)(end - start);
+			double delay = (double)(end - start);
+
+			auto framerate = 1000.0 / delay;
 
 			bool wait = framerate > this->player_info->framerate;
 
@@ -79,7 +81,7 @@ namespace Output {
 			// If less, perform frameskip
 
 			std::printf(
-				"\x1b[0m%.0f fps (vs %f fps) [%s] [%dx%d] [Skip: %.0f frames]\x1b[K",
+				"\x1b[0m%.0f fps (vs %f fps) [%s] [%dx%d] [Skip: %.0f frames] [Frame time: %.0f ms]\x1b[K",
 				framerate,
 				this->player_info->framerate,
 				wait ? "Wait" : "Skip",
@@ -87,7 +89,9 @@ namespace Output {
 				player_info->window_height,
 				// av_rescale_q(frame->pts, player_info->current_video_stream->time_base, AV_TIME_BASE_Q)
 //				(int)frame->pts
-				this->player_info->framerate - framerate
+				// this->player_info->framerate - framerate
+				delay / this->player_info->framerate,
+				delay
 			);
 		}
 

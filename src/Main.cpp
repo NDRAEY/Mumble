@@ -11,19 +11,16 @@ extern "C" {
 	#include <libswscale/swscale.h>
 }
 
-std::vector<std::string> video_devices = {
-		"None", "Debug"
-};
-
 std::string current_video_output_device = "None";
 
 void show_help() {
 	std::cout << "Usage: mumble <videofile>" << std::endl << std::endl;
 	std::cout << "Supported Video Outputs:" << std::endl;
 
+	/*
 	for(const auto& i : video_devices) {
 		std::cout << "    - " << i << std::endl;
-	}
+	}*/
 }
 
 const char* inputFileName = nullptr;
