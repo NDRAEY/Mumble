@@ -11,10 +11,10 @@
 #include <sys/time.h>
 #include "../Base.hpp"
 
-static long long timeInMilliseconds(void) {
-	struct timeval tv;
+static long long timeInMilliseconds() {
+	struct timeval tv = {};
 
-	gettimeofday(&tv, NULL);
+	gettimeofday(&tv, nullptr);
 
 	return (((long long)tv.tv_sec) * 1000) + (tv.tv_usec / 1000);
 }
@@ -23,7 +23,7 @@ namespace Output {
 
 	class TerminalIO : public Output {
 	public:
-		TerminalIO(struct ::PlayerInfo* player_info) : player_info(player_info) {
+		explicit TerminalIO(struct ::PlayerInfo* player_info) : player_info(player_info) {
 			ioctl(STDOUT_FILENO, TIOCGWINSZ, &winsize);
 
 			player_info->window_width = winsize.ws_col;
@@ -71,7 +71,7 @@ namespace Output {
 
 			auto end = ::timeInMilliseconds();
 
-			double delay = (double)(end - start);
+			auto delay = (double)(end - start);
 
 			auto framerate = 1000.0 / delay;
 

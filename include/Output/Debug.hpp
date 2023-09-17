@@ -12,7 +12,7 @@ namespace Output {
 
 	class Debug : public Output {
 	public:
-		Debug(struct ::PlayerInfo* player_info);
+		explicit Debug(struct ::PlayerInfo* player_info);
 		~Debug();
 
 		void write(const AVFrame* frame) override;

@@ -58,7 +58,7 @@ namespace Output {
 
 		if(vbuf)
 			munmap(vbuf, vinfo.width * vinfo.height * (vinfo.bits_per_pixel / 8));
-	};
+	}
 
 	// TODO: !!!: Not tested yet! My framebuffer gives me invalid configuration!
 	void FramebufferIO::write(const AVFrame *frame) {

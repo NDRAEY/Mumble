@@ -12,7 +12,7 @@
 namespace Output {
 	class FramebufferIO : public Output {
 	public:
-		FramebufferIO(struct ::PlayerInfo* player_info);
+		explicit FramebufferIO(struct ::PlayerInfo* player_info);
 		~FramebufferIO();
 
 		void write(const AVFrame *frame) override;
