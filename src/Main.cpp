@@ -17,10 +17,9 @@ void show_help() {
 	std::cout << "Usage: mumble <videofile>" << std::endl << std::endl;
 	std::cout << "Supported Video Outputs:" << std::endl;
 
-	/*
-	for(const auto& i : video_devices) {
-		std::cout << "    - " << i << std::endl;
-	}*/
+	for(const auto& i : Output::func_mapping) {
+		std::cout << "    - " << i.first << std::endl;
+	}
 }
 
 const char* inputFileName = nullptr;

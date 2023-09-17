@@ -4,21 +4,22 @@
 
 #include <iostream>
 #include <vector>
+
 #include "../../include/Output/FindByName.hpp"
-#include "../../include/Output/Debug.hpp"
-#include "../../include/Output/FramebufferIO.hpp"
-#include "../../include/Output/TerminalIO.hpp"
 
 namespace Output {
-	Output *FindByName(const std::string& name, struct ::PlayerInfo* player_info) {
-		std::vector<std::pair<std::string, Output* (*)(struct ::PlayerInfo*)>> mapping = {
-			{"None", nullptr},
-			{"Debug", &Debug::create},
-			{"Framebuffer", &FramebufferIO::create},
-			{"Terminal", &TerminalIO::create}
-		};
+	outfunc_t FindFuncByName(const std::string& name) {
+		for(const auto& i : func_mapping) {
+			if(i.first == name) {
+				return i.second;
+			}
+		}
+		
+		return nullptr;
+	}
 
-		if(name == "None") {
+	Output *FindByName(const std::string& name, struct ::PlayerInfo* player_info) {
+		/*if(name == "None") {
 			// ...
 		} else if(name == "Debug") {
 			return new Debug(player_info);
@@ -31,5 +32,14 @@ namespace Output {
 		}
 
 		return nullptr;
+	*/
+		auto func = FindFuncByName(name);
+		if(!func) {
+			return nullptr;
+		}
+
+		return func(player_info);
 	}
+
+	
 }

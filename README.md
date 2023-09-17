@@ -18,3 +18,12 @@ It supports multiple backends:
 + Terminal (TrueColor)
 
 For terminal output I recommend `xterm`.
+
+I having problems with framebuffer on Linux, therefore it's untestable on Linux.
+
+# ToDo
+
+- Audio output
+- Terminal grayscale output for less terminal emulator lags
+- SDL output
+- Control support
