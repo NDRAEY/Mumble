@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <string>
+#include <sys/time.h>
 
 extern "C" {
 #include <libavfilter/avfilter.h>
@@ -19,4 +20,23 @@ struct PlayerInfo {
 
 	double framerate;
 	AVStream* current_video_stream;
+
+	bool is_paused;
+
+	bool frame_is_waiting;
+	double delay;
+
+	double render_framerate;
+
+	size_t frames_processed;
+
+	size_t playing_started;
 };
+
+static long long timeInMilliseconds() {
+	struct timeval tv = {};
+
+	gettimeofday(&tv, nullptr);
+
+	return (((long long)tv.tv_sec) * 1000) + (tv.tv_usec / 1000);
+}

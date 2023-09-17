@@ -9,6 +9,8 @@ extern "C" {
 	#include <libavformat/avformat.h>
 	#include <libavutil/imgutils.h>
 	#include <libswscale/swscale.h>
+	#include <termios.h>
+	#include <fcntl.h>
 }
 
 std::string current_video_output_device = "None";
@@ -46,7 +48,6 @@ int main(int argc, char** argv) {
 
 				exit(1);
 			}
-
 			current_video_output_device = std::string(charptr_args[++i]);
 		} else {
 			std::cerr << "Treating as input file path: " << elem << std::endl;
@@ -55,15 +56,12 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	if(argc < 2) {
-		printf("Not enough args!\n");
+	if(!inputFileName) {
+		std::cerr << "No input file!" << std::endl;
 		exit(1);
 	}
 
     avformat_network_init();
-
-//    const char* inputFileName = argv[1];
-//    const char* outputFileName = "raw.out";
 
     AVFormatContext* inputFormatContext = nullptr;
     AVCodecContext* videoCodecContext = nullptr;
@@ -151,44 +149,76 @@ int main(int argc, char** argv) {
 		exit(1);
 	}
 
-    while (av_read_frame(inputFormatContext, packet) >= 0) {
+	// TODO: Controlling with keyboard.
+	// FIXME: I cannot use termios because termios and O_NONBLOCK on stdin is breaking Terminal output
+
+	std::cout << "Millis per frame: " << std::endl;
+
+	ssize_t frameskip = 0;
+
+	player_info.playing_started = timeInMilliseconds();
+
+	while (av_read_frame(inputFormatContext, packet) >= 0) {
+//		while(player_info.is_paused);
+
         if (packet->stream_index == (int)videoStreamIndex) {
             avcodec_send_packet(videoCodecContext, packet);
 
             while (avcodec_receive_frame(videoCodecContext, frame) >= 0) {
-                AVFrame* rgbFrame = av_frame_alloc();
-                rgbFrame->format = AV_PIX_FMT_RGB24;
-                rgbFrame->width = frame->width;
-                rgbFrame->height = frame->height;
-                av_frame_get_buffer(rgbFrame, 32);
+				player_info.frames_processed += 1;
+
+				while (frameskip-- > 0) {
+//					usleep(floor(1000000.0 / player_info.framerate));
+					goto readnext;
+				}
+
+				AVFrame *rgbFrame = av_frame_alloc();
+				rgbFrame->format = AV_PIX_FMT_RGB24;
+				rgbFrame->width = frame->width;
+				rgbFrame->height = frame->height;
+				av_frame_get_buffer(rgbFrame, 32);
 
 //				printf("SWS: %d x %d\n", player_info.window_width, player_info.window_height);
 
-				SwsContext* swsContext = sws_getContext(
-                    frame->width, frame->height,
+				SwsContext *swsContext = sws_getContext(
+					frame->width, frame->height,
 					videoCodecContext->pix_fmt,
-                    player_info.window_width, player_info.window_height,
+					player_info.window_width, player_info.window_height,
 					player_info.window_pixfmt,
-                    SWS_BILINEAR, nullptr, nullptr, nullptr
-                );
+					SWS_BILINEAR, nullptr, nullptr, nullptr
+				);
 
-                sws_scale(
-                    swsContext,
+				sws_scale(
+					swsContext,
 					frame->data,
 					frame->linesize,
 					0,
 					frame->height,
-                    rgbFrame->data, rgbFrame->linesize
-                );
+					rgbFrame->data, rgbFrame->linesize
+				);
 
-                sws_freeContext(swsContext);
+				sws_freeContext(swsContext);
 
-                // Writing frame data here!
+				auto start = timeInMilliseconds();
+
+				// Writing frame data here!
 				output->write(rgbFrame);
 
-                av_frame_free(&rgbFrame);
+				auto end = timeInMilliseconds() + 10;
+				player_info.delay = (double)(end - start);
+				player_info.render_framerate = 1000.0 / player_info.delay;
+				player_info.frame_is_waiting = player_info.render_framerate > player_info.framerate;
+
+				if (player_info.frame_is_waiting) {
+					usleep((int)((1000.0 / player_info.framerate) - player_info.delay) * 1000);
+				} else {
+					frameskip = ceil(player_info.delay / player_info.framerate);
+				}
+
+				av_frame_free(&rgbFrame);
             }
         }
+		readnext:
         av_packet_unref(packet);
     }
 

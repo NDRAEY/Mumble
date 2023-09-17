@@ -11,14 +11,6 @@
 #include <sys/time.h>
 #include "../Base.hpp"
 
-static long long timeInMilliseconds() {
-	struct timeval tv = {};
-
-	gettimeofday(&tv, nullptr);
-
-	return (((long long)tv.tv_sec) * 1000) + (tv.tv_usec / 1000);
-}
-
 namespace Output {
 
 	class TerminalIO : public Output {
@@ -36,8 +28,6 @@ namespace Output {
 
 		void write(const AVFrame *frame) override {
 			std::printf("\x1b[0;0H");
-
-			auto start = ::timeInMilliseconds();
 
 			ioctl(STDOUT_FILENO, TIOCGWINSZ, &winsize);
 
@@ -69,38 +59,48 @@ namespace Output {
 				}
 			}
 
-			auto end = ::timeInMilliseconds();
+//			if(!player_info->frame_is_waiting) {
+//				std::printf(
+//					"\x1b[0m%.0f fps (vs %f fps) [%dx%d] [Skip: %.0f frames] [Frame time: %.0f ms]\x1b[K",
+//					player_info->render_framerate,
+//					this->player_info->framerate,
+//					player_info->window_width,
+//					player_info->window_height,
+//					player_info->delay / this->player_info->framerate,
+//					player_info->delay
+//				);
+//			} else  {
+//				std::printf(
+//					"\x1b[0m%.0f fps (vs %f fps) [%dx%d] [Wait: %.0f ms] [Frame time: %.0f ms]\x1b[K",
+//					player_info->render_framerate,
+//					this->player_info->framerate,
+//					player_info->window_width,
+//					player_info->window_height,
+//					(1000.0 / this->player_info->framerate) - player_info->delay,
+//					player_info->delay
+//				);
+//			}
 
-			auto delay = (double)(end - start);
+			auto seconds_raw = (double)player_info->frames_processed / (double)player_info->framerate;
+			auto seconds = (int)seconds_raw % 60;
+			auto minutes = (int)seconds_raw / 60;
+			auto hours = (int)seconds_raw / 3600;
 
-			auto framerate = 1000.0 / delay;
+			// Synchronization quality.
+			auto diff = (double)(::timeInMilliseconds() - player_info->playing_started) - seconds_raw * 1000;
 
-			bool wait = framerate > this->player_info->framerate;
-
-			// If diff is greater than framerate, wait for a while
-			// If less, perform frameskip
-
-			if(!wait) {
 			std::printf(
-				"\x1b[0m%.0f fps (vs %f fps) [%dx%d] [Skip: %.0f frames] [Frame time: %.0f ms]\x1b[K",
-				framerate,
-				this->player_info->framerate,
-				player_info->window_width,
-				player_info->window_height,
-				delay / this->player_info->framerate,
-				delay
+				"\x1b[0mTime: [%02d:%02d:%02d.%03d] [Delay: %.2f ms] [Diff: %.2f ms (%d frames)]\x1b[K",
+				hours,
+				minutes,
+				seconds,
+				(int)((seconds_raw - (int)seconds_raw) * 1000),
+				player_info->delay,
+				diff,
+				(int)(diff / player_info->framerate)
 			);
-			} else  {
-			std::printf(
-				"\x1b[0m%.0f fps (vs %f fps) [%dx%d] [Wait: %.0f ms] [Frame time: %.0f ms]\x1b[K",
-				framerate,
-				this->player_info->framerate,
-				player_info->window_width,
-				player_info->window_height,
-				(1000.0 / this->player_info->framerate) - delay,
-				delay
-			);
-			}
+
+			fflush(stdout);
 		}
 
 		static Output* create(struct ::PlayerInfo* pi) {
