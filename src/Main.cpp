@@ -160,6 +160,7 @@ int main(int argc, char** argv) {
 
 	while (av_read_frame(inputFormatContext, packet) >= 0) {
 //		while(player_info.is_paused);
+		auto start = timeInMilliseconds();
 
         if (packet->stream_index == (int)videoStreamIndex) {
             avcodec_send_packet(videoCodecContext, packet);
@@ -199,12 +200,11 @@ int main(int argc, char** argv) {
 
 				sws_freeContext(swsContext);
 
-				auto start = timeInMilliseconds();
 
 				// Writing frame data here!
 				output->write(rgbFrame);
 
-				auto end = timeInMilliseconds() + 10;
+				auto end = timeInMilliseconds();
 				player_info.delay = (double)(end - start);
 				player_info.render_framerate = 1000.0 / player_info.delay;
 				player_info.frame_is_waiting = player_info.render_framerate > player_info.framerate;
@@ -212,7 +212,7 @@ int main(int argc, char** argv) {
 				if (player_info.frame_is_waiting) {
 					usleep((int)((1000.0 / player_info.framerate) - player_info.delay) * 1000);
 				} else {
-					frameskip = ceil(player_info.delay / player_info.framerate);
+					frameskip = floor(player_info.delay / player_info.framerate);
 				}
 
 				av_frame_free(&rgbFrame);
