@@ -12,6 +12,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
 			libswscale
 			libavutil
 			libavcodec
+			libavformat
 	)
 endif()
 
